@@ -1,5 +1,8 @@
 package leitura;
 
+import eleicao.Candidato;
+import eleicao.Partido;
+
 import java.io.*;
 import java.nio.charset.Charset;
 import java.time.LocalDate;
@@ -13,8 +16,8 @@ public class LeitorCandidatos {
     private static final String NAO_EXISTE = "#NE";
     private static final DateTimeFormatter FORMATO_DATA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    private Map<Integer, Candidato> candidatos;
-    private Map<Integer, Partido> partidos;
+    private final Map<Integer, Candidato> candidatos;
+    private final Map<Integer, Partido> partidos;
 
     public LeitorCandidatos() {
         this.candidatos = new HashMap<>();
@@ -47,14 +50,7 @@ public class LeitorCandidatos {
     }
 
     private Map<String, Integer> processarHeaders(String linha) {
-        Map<String, Integer> indices = new HashMap<>();
-        String[] colunas = separarCampos(linha);
-
-        for (int i = 0; i < colunas.length; i++) {
-            indices.put(colunas[i].trim(), i);
-        }
-
-        return indices;
+        // TODO
     }
 
     private Candidato processarLinhaCandidato(String linha,

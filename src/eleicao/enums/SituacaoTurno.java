@@ -9,7 +9,7 @@ public enum SituacaoTurno {
     SUPLENTE(5, "Suplente", false),
     INVALIDO(-1, "Candidatura Inválida", false);
 
-    private final boolean codigo;
+    private final int codigo;
     private final String descricao;
     private final boolean eleito;
 
@@ -19,8 +19,8 @@ public enum SituacaoTurno {
         this.eleito = eleito;
     }
 
-    public inte getCodigo() {
-        return this.descricao;
+    public int getCodigo() {
+        return this.codigo;
     }
 
     public String getDescricao() {

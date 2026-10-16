@@ -2,7 +2,7 @@ package eleicao.enums;
 
 public enum Cargo {
 
-    VEREADOR(13, "Vereador");
+    VEREADOR(13, "Vereador"),
     NAO_INFORMADO(-1, "Não informado");
 
     private final int codigo;

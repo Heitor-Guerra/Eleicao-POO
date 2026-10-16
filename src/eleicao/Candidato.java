@@ -4,15 +4,15 @@ import java.time.LocalDate;
 import eleicao.enums.*;
 
 public class Candidato {
-    private int numero;
-    private String nomeUrna;
-    private Partido partido;
-    private int numeroFederacao;
-    private LocalDate dataNascimento;
-    private Genero genero;
-    private SituacaoTurno situacaoTurno;
-    private int codigoMunicipio;
-    private Cargo cargo;
+    private final int numero;
+    private final String nomeUrna;
+    private final Partido partido;
+    private final int numeroFederacao;
+    private final LocalDate dataNascimento;
+    private final Genero genero;
+    private final SituacaoTurno situacaoTurno;
+    private final int codigoMunicipio;
+    private final Cargo cargo;
 
     Candidato(int numero, String nomeUrna, Partido partido, int numeroFederacao,
                      LocalDate dataNascimento, Genero genero, SituacaoTurno situacaoTurno,
@@ -65,11 +65,11 @@ public class Candidato {
     }
 
     public boolean isEleito() {
-        return situacaoTurno == 2 || situacaoTurno == 3;
+        return situacaoTurno == SituacaoTurno.ELEITO || situacaoTurno == SituacaoTurno.ELEITO_QP || situacaoTurno == SituacaoTurno.ELEITO_MIDIA;
     }
 
     public boolean isValido() {
-        return situacaoTurno != -1;
+        return situacaoTurno == SituacaoTurno.INVALIDO;
     }
 
     // Para teste por enquanto
