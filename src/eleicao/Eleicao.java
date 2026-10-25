@@ -1,32 +1,33 @@
 package eleicao;
 
+import eleicao.exceptions.EleicaoJaExistenteException;
+
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-public class Eleicao {
-    private final Map<Integer, Partido> partidos;
+/** Singleton de ELeicao */
+public enum Eleicao {
+    INSTANCIA;
 
+    private final Map<Integer, EleicaoMunicipio> eleicoesPorMunicipio = new HashMap<>();
 
-    public Eleicao() {
-        this.partidos = new HashMap<>();
+    public EleicaoMunicipio registrarEleicao(int codigoMunicipio, LocalDate dataEleicao) {
+        if (eleicoesPorMunicipio.containsKey(codigoMunicipio) &&
+            eleicoesPorMunicipio.get(codigoMunicipio).getDataEleicao() == dataEleicao) {
+            throw new EleicaoJaExistenteException(codigoMunicipio, dataEleicao);
+        }
+        EleicaoMunicipio nova = new EleicaoMunicipio(dataEleicao, codigoMunicipio);
+        eleicoesPorMunicipio.put(codigoMunicipio, nova);
+        return nova;
     }
 
-    public Partido registrarPartido(int numero, String sigla) {
-        Partido partido = new Partido(numero, sigla);
-        this.partidos.put(numero, partido);
-        return partido;
+    /** Pode retornar nulo se o código não estiver registrado. */
+    public EleicaoMunicipio getEleicaoByCodigoMunicipio(int codigoMunicipio) {
+        return eleicoesPorMunicipio.get(codigoMunicipio);
     }
 
-    public List<Partido> getPartidos() {
-        return new ArrayList<>(this.partidos.values());
+    public Map<Integer, EleicaoMunicipio> getEleicoesPorMunicipio() {
+        return new HashMap<>(eleicoesPorMunicipio);
     }
-
-    public Partido getPartidoByNumero(int numero) {
-        return this.partidos.get(numero);
-    }
-
 }

@@ -1,6 +1,8 @@
 package eleicao;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+
 import eleicao.enums.*;
 
 public class Candidato {
@@ -14,6 +16,8 @@ public class Candidato {
     private final int codigoMunicipio;
     private final Cargo cargo;
 
+    private int votos;
+
     Candidato(int numero, String nomeUrna, Partido partido, int numeroFederacao,
                      LocalDate dataNascimento, Genero genero, SituacaoTurno situacaoTurno,
                      int codigoMunicipio, Cargo cargo) {
@@ -26,6 +30,7 @@ public class Candidato {
         this.situacaoTurno = situacaoTurno;
         this.codigoMunicipio = codigoMunicipio;
         this.cargo = cargo;
+        this.votos = 0;
     }
 
     public int getNumero() {
@@ -64,12 +69,27 @@ public class Candidato {
         return cargo;
     }
 
+    public int getVotos() {
+        return votos;
+    }
+
     public boolean isEleito() {
         return situacaoTurno == SituacaoTurno.ELEITO || situacaoTurno == SituacaoTurno.ELEITO_QP || situacaoTurno == SituacaoTurno.ELEITO_MIDIA;
     }
 
     public boolean isValido() {
         return situacaoTurno == SituacaoTurno.INVALIDO;
+    }
+
+    public long getIdade(LocalDate dataReferencia) {
+        if (this.dataNascimento.isAfter(dataReferencia)) {
+            return -1;
+        }
+        return ChronoUnit.YEARS.between(this.dataNascimento, dataReferencia);
+    }
+
+    void adicionarVotos(int quantidade) {
+        votos += quantidade;
     }
 
     // Para teste por enquanto
