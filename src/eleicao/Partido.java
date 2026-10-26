@@ -65,12 +65,12 @@ public class Partido implements Comparable<Partido> {
 
     public Candidato getCandidatoMaisVotado() {
         List<Candidato> candidatos = new ArrayList<>(this.candidatos.stream().sorted(Collections.reverseOrder()).toList());
-        return candidatos.getFirst();
+        return candidatos.get(0);
     }
 
     public Candidato getCandidatoMenosVotado() {
         List<Candidato> candidatos = new ArrayList<>(this.candidatos.stream().sorted(Collections.reverseOrder()).toList());
-        return candidatos.getLast();
+        return candidatos.get(candidatos.size() - 1);
     }
 
      // Para teste por enquanto

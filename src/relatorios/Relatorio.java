@@ -7,10 +7,7 @@ import eleicao.Partido;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 public class Relatorio {
     private static final OutputStream OUTPUT_STREAM = System.out;
@@ -25,6 +22,10 @@ public class Relatorio {
             printPrejudicados(writer);
             printBeneficiados(writer);
             printVotacaoPartidos(writer);
+            printPrimeiroUltimoPartido(writer);
+            printEleitosFaixaEtaria(writer);
+            printEleitosPorGenero(writer);
+            printTotalVotos(writer);
             writer.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -117,14 +118,144 @@ public class Relatorio {
         writer.write(sb.toString());
     }
 
+    private static void printPrimeiroUltimoPartido(Writer writer) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("%nPrimeiro e último colocados de cada partido:%n"));
 
+        List<Partido> partidos = Eleicao.INSTANCIA.getPartidos().stream()
+                .filter(p -> p.getCandidatos().stream().anyMatch(c -> c.getVotos() > 0))
+                .sorted(Comparator.comparingInt((Partido partido) -> partido.getCandidatoMaisVotado().getVotos())
+                        .reversed().thenComparingInt(Partido::getNumero))
+                .toList();
+
+        int posicao = 1;
+
+        for (Partido partido : partidos) {
+            List<Candidato> candidatos = partido.getCandidatos().stream()
+                    .sorted(Collections.reverseOrder())
+                    .toList();
+
+            Candidato primeiro = candidatos.get(0);
+            Candidato ultimo = candidatos.get(candidatos.size() - 1);
+
+            sb.append(String.format(
+                    LOCALE,
+                    "%d - %s - %d, %s (%d, %,d votos) / %s (%d, %,d votos)%n",
+                    posicao,
+                    partido.getSigla(),
+                    partido.getNumero(),
+                    normalizarNome(primeiro),
+                    primeiro.getNumero(),
+                    primeiro.getVotos(),
+                    normalizarNome(ultimo),
+                    ultimo.getNumero(),
+                    ultimo.getVotos()
+            ));
+
+            posicao++;
+        }
+
+        writer.write(sb.toString());
+    }
+
+    private static void printEleitosFaixaEtaria(Writer writer) throws IOException {
+        List<Candidato> eleitos = Eleicao.INSTANCIA.getEleitosVotosDecrescente();
+        long totalEleitos = eleitos.size();
+
+        long abaixoDe30 = 0;
+        long de30a39 = 0;
+        long de40a49 = 0;
+        long de50a59 = 0;
+        long aPartirDe60 = 0;
+
+        for (Candidato candidato : eleitos) {
+            long idade = candidato.getIdade(Eleicao.INSTANCIA.getDataEleicao());
+
+            if (idade < 30) {
+                abaixoDe30++;
+            } else if (idade < 40) {
+                de30a39++;
+            } else if (idade < 50) {
+                de40a49++;
+            } else if (idade < 60) {
+                de50a59++;
+            } else {
+                aPartirDe60++;
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("%nEleitos, por faixa etária (na data da eleição):%n"));
+
+        sb.append(formatarFaixaEtaria("      Idade < 30", abaixoDe30, totalEleitos));
+        sb.append(formatarFaixaEtaria("30 <= Idade < 40", de30a39, totalEleitos));
+        sb.append(formatarFaixaEtaria("40 <= Idade < 50", de40a49, totalEleitos));
+        sb.append(formatarFaixaEtaria("50 <= Idade < 60", de50a59, totalEleitos));
+        sb.append(formatarFaixaEtaria("60 <= Idade     ", aPartirDe60, totalEleitos));
+
+        writer.write(sb.toString());
+    }
+
+    private static void printEleitosPorGenero(Writer writer) throws IOException {
+        List<Candidato> eleitos = Eleicao.INSTANCIA.getEleitosVotosDecrescente();
+        long totalEleitos = eleitos.size();
+
+        long feminino = 0;
+        long masculino = 0;
+
+        for (Candidato candidato : eleitos) {
+            switch (candidato.getGenero()) {
+                case FEMININO -> feminino++;
+                case MASCULINO -> masculino++;
+                case NAO_INFORMADO -> {}
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(String.format("%nEleitos, por gênero:%n"));
+        sb.append(formatarGenero("Feminino", feminino, totalEleitos));
+        sb.append(formatarGenero("Masculino", masculino, totalEleitos));
+
+        writer.write(sb.toString());
+    }
+
+    private static void printTotalVotos(Writer writer) throws IOException {
+        int totalValidos = Eleicao.INSTANCIA.getTotalVotosValidos();
+        int totalNominais = Eleicao.INSTANCIA.getTotalVotosNominais();
+        int totalLegenda = Eleicao.INSTANCIA.getTotalVotosLegenda();
+
+        double percentualNominais = totalValidos == 0 ? 0.0 : totalNominais * 100.0 / totalValidos;
+        double percentualLegenda = totalValidos == 0 ? 0.0 : totalLegenda * 100.0 / totalValidos;
+
+        String resultado = String.format(
+                LOCALE,
+                "%nTotal de votos válidos:    %,d%n" +
+                        "Total de votos nominais:   %,d (%.2f%%)%n" +
+                        "Total de votos de legenda: %,d (%.2f%%)%n",
+                totalValidos,
+                totalNominais,
+                percentualNominais,
+                totalLegenda,
+                percentualLegenda
+        );
+
+        writer.write(resultado);
+    }
 
     ///// Auxiliares
-
     private static String formatarCandidato(int posicao, Candidato candidato) {
         String federacao = candidato.getNumeroFederacao() != -1 ? "*" : "";
-        return String.format(LOCALE, "%d - %s%s (%s, %,d votos)%n",
-            posicao, federacao, candidato.getNomeUrna(), candidato.getPartido().getSigla(), candidato.getVotos());
+
+        return String.format(
+                LOCALE,
+                "%d - %s%s (%s, %,d votos)%n",
+                posicao,
+                federacao,
+                normalizarNome(candidato),
+                candidato.getPartido().getSigla(),
+                candidato.getVotos()
+        );
     }
 
     private static Map<Integer, Integer> getPosicoesRanking() {
@@ -137,5 +268,19 @@ public class Relatorio {
         }
 
         return posicoes;
+    }
+
+    private static String normalizarNome(Candidato candidato) {
+        return candidato.getNomeUrna().trim().replaceAll("\\s+", " ");
+    }
+
+    private static String formatarFaixaEtaria(String faixa, long quantidade, long total) {
+        double percentual = total == 0 ? 0.0 : quantidade * 100.0 / total;
+        return String.format(LOCALE, "%s: %d (%.2f%%)%n", faixa, quantidade, percentual);
+    }
+
+    private static String formatarGenero(String genero, long quantidade, long total) {
+        double percentual = total == 0 ? 0.0 : quantidade * 100.0 / total;
+        return String.format(LOCALE, "%s: %d (%.2f%%)%n", genero, quantidade, percentual);
     }
 }
