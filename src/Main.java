@@ -1,6 +1,5 @@
 import eleicao.Candidato;
 import eleicao.Eleicao;
-import eleicao.EleicaoMunicipio;
 import leitura.LeitorCandidatos;
 import leitura.LeitorEleicao;
 
@@ -8,7 +7,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.time.format.ResolverStyle;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -51,13 +49,14 @@ public final class Main {
         }
 
         LocalDate dataEleicao = LocalDate.parse(args[3], FORMATO_DATA);
+        Eleicao.INSTANCIA.inicializar(codigoMunicipio, dataEleicao);
 
-        LeitorCandidatos l1 = new LeitorCandidatos(args[1], dataEleicao);
+        LeitorCandidatos l1 = new LeitorCandidatos(args[1]);
         LeitorEleicao l2 = new LeitorEleicao(args[2]);
         l1.le();
         l2.le();
 
-        EleicaoMunicipio em = Eleicao.INSTANCIA.getEleicaoByCodigoMunicipio(codigoMunicipio);
+        Eleicao em = Eleicao.INSTANCIA;
 
         System.out.println("Leitura dos arquivos concluída.");
         System.out.println("Município: " + em.getCodigoMunicipio());
