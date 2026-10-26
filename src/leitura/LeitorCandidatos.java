@@ -1,69 +1,66 @@
 package leitura;
 
-import eleicao.Candidato;
+import eleicao.Eleicao;
+import eleicao.EleicaoMunicipio;
 import eleicao.Partido;
+import eleicao.enums.Cargo;
+import eleicao.enums.Genero;
+import eleicao.enums.SituacaoTurno;
+import eleicao.exceptions.CandidatoJaExistenteException;
+import eleicao.exceptions.PartidoJaExistenteException;
+import leitura.exceptions.LinhaInvalidaException;
 
-import java.io.*;
-import java.nio.charset.Charset;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.List;
 
-public class LeitorCandidatos {
-    private static final String ENCODING = "ISO-8859-1";
-    private static final char SEPARADOR = ';';
-    private static final String NULO = "#NULO";
-    private static final String NAO_EXISTE = "#NE";
-    private static final DateTimeFormatter FORMATO_DATA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+public class LeitorCandidatos extends LeitorCSV {
+    private final LocalDate dataEleicao;
 
-    private final Map<Integer, Candidato> candidatos;
-    private final Map<Integer, Partido> partidos;
-
-    public LeitorCandidatos() {
-        this.candidatos = new HashMap<>();
-        this.partidos = new HashMap<>();
+    public LeitorCandidatos(String caminhoArquivo, LocalDate dataELeicao) {
+        super(caminhoArquivo);
+        this.dataEleicao = dataELeicao;
     }
 
-
-    public Map<Integer, Candidato> lerArquivoCandidatos(String caminhoArquivo, int codigoMunicipio) throws IOException {
-
-        try (BufferedReader leitor = new BufferedReader( new InputStreamReader(new FileInputStream(caminhoArquivo), ENCODING))) {
-            String linha;
-            boolean primeiraLinha = true;
-            Map<String, Integer> headers = new HashMap<>();
-
-            while ((linha = leitor.readLine()) != null) {
-                if (primeiraLinha) {
-                    headers = processarHeaders(linha);
-                    primeiraLinha = false;
-                    continue;
-                }
-
-                Candidato candidato = processarLinhaCandidato(linha, headers, codigoMunicipio);
-                if (candidato != null) {
-                    candidatos.put(candidato.getNumero(), candidato);
-                }
-            }
+    @Override
+    protected void processarLinha(List<String> campos, int numeroLinha) throws LinhaInvalidaException {
+        Cargo cargo = Cargo.deCodigo(getInteiro(campos, "CD_CARGO", numeroLinha));
+        if (cargo != Cargo.VEREADOR) {
+            return;
         }
 
-        return candidatos;
+        int codigoMunicipio = getInteiro(campos, "SG_UE", numeroLinha);
+        EleicaoMunicipio em = Eleicao.INSTANCIA.getEleicaoByCodigoMunicipio(codigoMunicipio);
+        if(em == null) {
+            em = Eleicao.INSTANCIA.registrarEleicao(codigoMunicipio, dataEleicao);
+        }
+
+        SituacaoTurno situacao = SituacaoTurno.deCodigo(getInteiro(campos, "CD_SIT_TOT_TURNO", numeroLinha));
+        if (situacao == SituacaoTurno.INVALIDO) {
+            return;
+        }
+
+        int numeroCandidato = getInteiro(campos, "NR_CANDIDATO", numeroLinha);
+        String nomeUrna = getString(campos, "NM_URNA_CANDIDATO");
+        int numeroPartido = getInteiro(campos, "NR_PARTIDO", numeroLinha);
+        String siglaPartido = getString(campos, "SG_PARTIDO");
+        int numeroFederacao = getInteiro(campos, "NR_FEDERACAO", numeroLinha);
+        LocalDate dataNascimento = getData(campos, "DT_NASCIMENTO", numeroLinha);
+        Genero genero = Genero.deCodigo(getInteiro(campos, "CD_GENERO", numeroLinha));
+
+        try {
+            Partido partido = em.getPartidoByNumero(numeroPartido);
+            if (partido == null) {
+                partido = em.registraPartido(numeroPartido, siglaPartido);
+            }
+
+            if (em.getCandidatoByNumero(numeroCandidato) == null) {
+                em.registrarCandidato(partido, numeroCandidato,
+                        nomeUrna, numeroFederacao, dataNascimento, genero, situacao,
+                        codigoMunicipio, cargo);
+            }
+        } catch (CandidatoJaExistenteException | PartidoJaExistenteException ex) {
+            throw new LinhaInvalidaException(numeroLinha);
+        }
     }
 
-    private Map<String, Integer> processarHeaders(String linha) {
-        // TODO
-    }
-
-    private Candidato processarLinhaCandidato(String linha,
-                                              Map<String, Integer> indices,
-                                              int codigoMunicipio) {
-        // TODO
-    }
-
-    public Map<Integer, Candidato> getCandidatos() {
-        return candidatos;
-    }
-
-    public Map<Integer, Partido> getPartidos() {
-        return partidos;
-    }
 }

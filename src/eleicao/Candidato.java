@@ -78,7 +78,7 @@ public class Candidato {
     }
 
     public boolean isValido() {
-        return situacaoTurno == SituacaoTurno.INVALIDO;
+        return situacaoTurno != SituacaoTurno.INVALIDO;
     }
 
     public long getIdade(LocalDate dataReferencia) {

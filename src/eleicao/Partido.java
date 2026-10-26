@@ -1,19 +1,22 @@
 package eleicao;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.time.LocalDate;
+import java.util.Set;
+
 import eleicao.enums.*;
 
 public class Partido {
     private final int numero;
     private final String sigla;
-    private final List<Candidato> candidatos;
+    private final Set<Candidato> candidatos;
     private int votosLegenda;
 
     Partido(int numero, String sigla) {
         this.numero = numero;
-        this.candidatos = new ArrayList<>();
+        this.candidatos = new HashSet<>();
         this.sigla = sigla;
         this.votosLegenda = 0;
     }

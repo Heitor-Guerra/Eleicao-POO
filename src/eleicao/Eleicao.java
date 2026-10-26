@@ -12,9 +12,10 @@ public enum Eleicao {
 
     private final Map<Integer, EleicaoMunicipio> eleicoesPorMunicipio = new HashMap<>();
 
-    public EleicaoMunicipio registrarEleicao(int codigoMunicipio, LocalDate dataEleicao) {
+    public EleicaoMunicipio registrarEleicao(int codigoMunicipio, LocalDate dataEleicao)
+            throws EleicaoJaExistenteException {
         if (eleicoesPorMunicipio.containsKey(codigoMunicipio) &&
-            eleicoesPorMunicipio.get(codigoMunicipio).getDataEleicao() == dataEleicao) {
+            eleicoesPorMunicipio.get(codigoMunicipio).getDataEleicao().isEqual(dataEleicao)) {
             throw new EleicaoJaExistenteException(codigoMunicipio, dataEleicao);
         }
         EleicaoMunicipio nova = new EleicaoMunicipio(dataEleicao, codigoMunicipio);

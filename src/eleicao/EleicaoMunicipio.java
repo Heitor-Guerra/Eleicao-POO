@@ -37,7 +37,7 @@ public class EleicaoMunicipio {
         return dataEleicao;
     }
 
-    public Partido registraPartido(int numero, String sigla) {
+    public Partido registraPartido(int numero, String sigla) throws PartidoJaExistenteException {
         if (partidos.containsKey(numero)) {
             throw new PartidoJaExistenteException(sigla, numero);
         }
@@ -56,20 +56,19 @@ public class EleicaoMunicipio {
         return new ArrayList<>(partidos.values());
     }
 
-    public Candidato registrarCandidato(int numeroPartido, int numeroCandidato,
+    public Candidato registrarCandidato(Partido partido, int numeroCandidato,
                                         String nomeUrna, int numeroFederacao,
                                         LocalDate dataNascimento, Genero genero,
                                         SituacaoTurno situacaoTurno, int codigoMunicipio,
-                                        Cargo cargo) {
+                                        Cargo cargo) throws CandidatoJaExistenteException,
+                                        PartidoNaoExistenteException {
         if (candidatos.containsKey(numeroCandidato)) {
             throw new CandidatoJaExistenteException(nomeUrna, numeroCandidato);
         }
-        Partido partido = partidos.get(numeroPartido);
-        if (partido == null) {
-            throw new PartidoNaoExistenteException(numeroPartido);
-        }
-        return partido.registrarCandidato(numeroCandidato, nomeUrna,numeroFederacao,
-                dataNascimento, genero, situacaoTurno, codigoMunicipio, cargo);
+        Candidato c = partido.registrarCandidato(numeroCandidato, nomeUrna,numeroFederacao,
+                        dataNascimento, genero, situacaoTurno, codigoMunicipio, cargo);
+        candidatos.put(c.getNumero(), c);
+        return c;
     }
 
     boolean contemCandidato(int numero) {
@@ -85,21 +84,20 @@ public class EleicaoMunicipio {
         return candidatos.get(numero);
     }
 
-    /** Adiciona os votos, considerando o número de dígitos (5 para nominal e 2 para legenda).
-     *  Retorna booleano que indica o sucesso. */
-    public boolean registrarVotos(String numeroVotoTexto, int quantidade) {
+    /** Adiciona os votos, considerando o número de dígitos (5 para nominal e 2 para legenda). */
+    public void registrarVotos(String numeroVotoTexto, int quantidade) {
         String numeroLimpo = numeroVotoTexto.trim();
 
         int numeroVoto;
         try {
             numeroVoto = Integer.parseInt(numeroLimpo);
         } catch (NumberFormatException ex) {
-            return false;
+            return;
         }
 
         for (int codigo : VOTOS_NAO_VALIDOS) {
             if (numeroVoto == codigo) {
-                return false;
+                return;
             }
         }
 
@@ -107,21 +105,18 @@ public class EleicaoMunicipio {
         if (numeroLimpo.length() == 5) {
             Candidato candidato = candidatos.get(numeroVoto);
             if (candidato == null) {
-                return false;
+                return;
             }
 
             candidato.adicionarVotos(quantidade);
-            return true;
         } else if (numeroLimpo.length() == 2) {
             Partido partido = partidos.get(numeroVoto);
             if (partido == null) {
-                return false;
+                return;
             }
 
             partido.adicionarVotosLegenda(quantidade);
-            return true;
         }
-        return false;
     }
 
     public int getTotalVotosNominais() {
