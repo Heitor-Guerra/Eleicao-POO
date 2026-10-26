@@ -1,14 +1,11 @@
 package eleicao;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.time.LocalDate;
-import java.util.Set;
 
 import eleicao.enums.*;
 
-public class Partido {
+public class Partido implements Comparable<Partido> {
     private final int numero;
     private final String sigla;
     private final Set<Candidato> candidatos;
@@ -58,13 +55,36 @@ public class Partido {
         return getVotosNominais() + votosLegenda;
     }
 
-    void adicionarVotosLegenda(int quantidade) {
+    public void adicionarVotosLegenda(int quantidade) {
         votosLegenda += quantidade;
     }
 
-    // Para teste por enquanto
+    public long getNumeroEleitos() {
+        return this.candidatos.stream().filter(Candidato::isEleito).count();
+    }
+
+    public Candidato getCandidatoMaisVotado() {
+        List<Candidato> candidatos = new ArrayList<>(this.candidatos.stream().sorted(Collections.reverseOrder()).toList());
+        return candidatos.getFirst();
+    }
+
+    public Candidato getCandidatoMenosVotado() {
+        List<Candidato> candidatos = new ArrayList<>(this.candidatos.stream().sorted(Collections.reverseOrder()).toList());
+        return candidatos.getLast();
+    }
+
+     // Para teste por enquanto
     @Override
     public String toString() {
         return sigla;
+    }
+
+    @Override
+    public int compareTo(Partido outro) {
+        int diffVotos = this.getTotalVotos() - outro.getTotalVotos();
+        if (diffVotos == 0) {
+            return outro.getNumero() - this.getNumero();
+        }
+        return diffVotos;
     }
 }

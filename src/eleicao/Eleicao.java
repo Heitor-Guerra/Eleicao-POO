@@ -8,10 +8,7 @@ import eleicao.exceptions.PartidoJaExistenteException;
 import eleicao.exceptions.PartidoNaoExistenteException;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /** Singleton de ELeicao */
 public enum Eleicao {
@@ -135,7 +132,36 @@ public enum Eleicao {
         return total;
     }
 
-    public long getTotalVotosValidos() {
+    public int getTotalVotosValidos() {
         return getTotalVotosNominais() + getTotalVotosLegenda();
+    }
+
+    public long getNumeroEleitos() {
+        return this.candidatos.values().stream().filter(Candidato::isEleito).count();
+    }
+
+    public List<Candidato> getEleitosVotosDecrescente() {
+        return new ArrayList<>(this.candidatos.values().stream().sorted(Collections.reverseOrder()).filter(Candidato::isEleito).toList());
+    }
+
+    public List<Candidato> getCandidatosMaisVotosDecrescente(long num) {
+        return new ArrayList<>(this.candidatos.values().stream().sorted(Collections.reverseOrder()).limit(num).toList());
+    }
+
+    public List<Candidato> getEleitosBeneficiados() {
+        long vagas = getNumeroEleitos();
+        List<Candidato> ranking = getCandidatosMaisVotosDecrescente(this.candidatos.size());
+        return new ArrayList<>(ranking.stream().skip(vagas).filter(Candidato::isEleito).toList());
+    }
+
+    public List<Candidato> getPrejudicados() {
+        long vagas = getNumeroEleitos();
+        List<Candidato> ranking = getCandidatosMaisVotosDecrescente(vagas);
+        return new ArrayList<>(ranking.stream().filter(candidato -> !candidato.isEleito()).toList()
+        );
+    }
+
+    public List<Partido> getPartidosVotosDecrescente() {
+        return new ArrayList<>(this.partidos.values().stream().sorted(Collections.reverseOrder()).toList());
     }
 }

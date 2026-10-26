@@ -5,7 +5,7 @@ import java.time.temporal.ChronoUnit;
 
 import eleicao.enums.*;
 
-public class Candidato {
+public class Candidato implements Comparable<Candidato> {
     private final int numero;
     private final String nomeUrna;
     private final Partido partido;
@@ -96,5 +96,14 @@ public class Candidato {
     @Override
     public String toString() {
         return nomeUrna;
+    }
+
+    @Override
+    public int compareTo(Candidato outro) {
+        int diffVotos = this.getVotos() - outro.getVotos();
+        if (diffVotos != 0) {
+            return diffVotos;
+        }
+        return outro.getDataNascimento().compareTo(this.getDataNascimento());
     }
 }

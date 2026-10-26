@@ -13,10 +13,10 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 
 public abstract class LeitorCSV {
-    protected static final Charset CODIFICACAO_TSE = StandardCharsets.ISO_8859_1;
-    protected static final Locale LOCALE = Locale.forLanguageTag("pt-BR");
-    protected static final DateTimeFormatter FORMATO_DATA = DateTimeFormatter.ofPattern("dd/MM/yyyy", LOCALE);
-    protected static final char SEPARADOR = ';';
+    private static final Charset CODIFICACAO_TSE = StandardCharsets.ISO_8859_1;
+    private static final Locale LOCALE = Locale.forLanguageTag("pt-BR");
+    private static final DateTimeFormatter FORMATO_DATA = DateTimeFormatter.ofPattern("dd/MM/yyyy", LOCALE);
+    private static final char SEPARADOR = ';';
 
     private final String caminhoArquivo;
     private final Map<String, Integer> headersIndices;
