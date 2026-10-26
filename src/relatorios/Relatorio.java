@@ -140,16 +140,18 @@ public class Relatorio {
 
             sb.append(String.format(
                     LOCALE,
-                    "%d - %s - %d, %s (%d, %,d votos) / %s (%d, %,d votos)%n",
+                    "%d - %s - %d, %s (%d, %,d %s) / %s (%d, %,d %s)%n",
                     posicao,
                     partido.getSigla(),
                     partido.getNumero(),
                     normalizarNome(primeiro),
                     primeiro.getNumero(),
                     primeiro.getVotos(),
+                    primeiro.getVotos() <= 1 ? "voto" : "votos",
                     normalizarNome(ultimo),
                     ultimo.getNumero(),
-                    ultimo.getVotos()
+                    ultimo.getVotos(),
+                    ultimo.getVotos() <= 1 ? "voto" : "votos"
             ));
 
             posicao++;
