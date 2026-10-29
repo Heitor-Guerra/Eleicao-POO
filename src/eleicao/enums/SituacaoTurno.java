@@ -2,9 +2,8 @@ package eleicao.enums;
 
 public enum SituacaoTurno {
 
-    ELEITO(1, "Eleito", true),
     ELEITO_QP(2, "Eleito", true),
-    ELEITO_MIDIA(3, "Eleito", true),
+    ELEITO_MEDIA(3, "Eleito", true),
     NAO_ELEITO(4, "Não eleito", false),
     SUPLENTE(5, "Suplente", false),
     INVALIDO(-1, "Candidatura Inválida", false);

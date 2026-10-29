@@ -20,10 +20,12 @@ public abstract class LeitorCSV {
 
     private final String caminhoArquivo;
     private final Map<String, Integer> headersIndices;
+    private final List<String> colunasObrigatorias;
 
-    protected LeitorCSV(String caminhoArquivo) {
+    protected LeitorCSV(String caminhoArquivo, String... colunasObrigatorias) {
         this.headersIndices = new HashMap<>();
         this.caminhoArquivo = caminhoArquivo;
+        this.colunasObrigatorias = List.of(colunasObrigatorias);
     }
 
     /**
@@ -31,13 +33,24 @@ public abstract class LeitorCSV {
      */
     protected abstract void processarLinha(List<String> campos, int numeroLinha)  throws LinhaInvalidaException;
 
-    public final void le() throws LinhaTamanhoInvalidoException, AspasNaoFechadasException, CabecalhoRepetidoException, LinhaInvalidaException {
+    public final void le() throws ErroLeituraArquivoException, ArquivoVazioException,
+            LinhaTamanhoInvalidoException, AspasNaoFechadasException,
+            CabecalhoRepetidoException, ColunaAusenteException, LinhaInvalidaException {
         try (BufferedReader leitor = new BufferedReader(new FileReader(caminhoArquivo, CODIFICACAO_TSE))) {
             String linha = leitor.readLine();
+            if (linha == null || linha.isBlank()) {
+                throw new ArquivoVazioException(caminhoArquivo);
+            }
 
             List<String> camposCabecalho = parseLinha(linha, 1);
             int quantidadeColunasCabecalho = camposCabecalho.size();
+            headersIndices.clear();
             mapearCabecalho(camposCabecalho);
+            for (String coluna : colunasObrigatorias) {
+                if (!headersIndices.containsKey(coluna)) {
+                    throw new ColunaAusenteException(coluna);
+                }
+            }
 
             int numeroLinha = 1;
             while ((linha = leitor.readLine()) != null) {
@@ -73,8 +86,6 @@ public abstract class LeitorCSV {
         StringBuilder campo = new StringBuilder();
         boolean dentroAspas = false;
 
-        // REVIEW
-        // Não sei se tem um jeito melhor de fazer isso aqui.
         for (int i = 0; i < linha.length(); i++) {
             char caractere = linha.charAt(i);
             if (caractere == '"') {
@@ -85,7 +96,7 @@ public abstract class LeitorCSV {
                     dentroAspas = !dentroAspas;
                 }
             } else if (caractere == SEPARADOR && !dentroAspas) {
-                campos.add(campo.toString().trim());
+                campos.add(campo.toString());
                 campo.setLength(0);
             } else {
                 campo.append(caractere);
@@ -95,18 +106,21 @@ public abstract class LeitorCSV {
         if (dentroAspas) {
             throw new AspasNaoFechadasException(numeroLinha);
         }
-        campos.add(campo.toString().trim());
+        campos.add(campo.toString());
         return campos;
     }
 
     protected final String getString(List<String> campos, String coluna) {
-        int indice = this.headersIndices.get(coluna);
-        return campos.get(indice).trim();
+        Integer indice = this.headersIndices.get(coluna);
+        if (indice == null) {
+            throw new ColunaAusenteException(coluna);
+        }
+        return campos.get(indice);
     }
 
     protected final int getInteiro(List<String> campos, String coluna, int numeroLinha) {
         try {
-            String valor = getString(campos, coluna);
+            String valor = getString(campos, coluna).trim();
             return Integer.parseInt(valor);
         } catch (NumberFormatException ex) {
             throw new ErroParsingException(numeroLinha, coluna);
@@ -115,7 +129,7 @@ public abstract class LeitorCSV {
 
     protected final LocalDate getData(List<String> campos, String coluna, int numeroLinha) {
         try {
-            String valor = getString(campos, coluna);
+            String valor = getString(campos, coluna).trim();
             return LocalDate.parse(valor, FORMATO_DATA);
         } catch (DateTimeParseException ex) {
             throw new ErroParsingException(numeroLinha, coluna);

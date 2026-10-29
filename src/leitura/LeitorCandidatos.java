@@ -6,7 +6,7 @@ import eleicao.enums.Cargo;
 import eleicao.enums.Genero;
 import eleicao.enums.SituacaoTurno;
 import eleicao.exceptions.CandidatoJaExistenteException;
-import eleicao.exceptions.PartidoJaExistenteException;
+import eleicao.exceptions.PartidoNaoExistenteException;
 import leitura.exceptions.LinhaInvalidaException;
 
 import java.time.LocalDate;
@@ -14,7 +14,9 @@ import java.util.List;
 
 public class LeitorCandidatos extends LeitorCSV {
     public LeitorCandidatos(String caminhoArquivo) {
-        super(caminhoArquivo);
+        super(caminhoArquivo, "SG_UE", "CD_CARGO", "NR_PARTIDO", "SG_PARTIDO",
+                "CD_SIT_TOT_TURNO", "NR_CANDIDATO", "NM_URNA_CANDIDATO",
+                "NR_FEDERACAO", "DT_NASCIMENTO", "CD_GENERO");
     }
 
     @Override
@@ -50,13 +52,11 @@ public class LeitorCandidatos extends LeitorCSV {
         Genero genero = Genero.deCodigo(getInteiro(campos, "CD_GENERO", numeroLinha));
 
         try {
-            if (em.getCandidatoByNumero(numeroCandidato) == null) {
-                em.registrarCandidato(partido, numeroCandidato,
-                        nomeUrna, numeroFederacao, dataNascimento, genero, situacao,
-                        codigoMunicipio, cargo);
-            }
-        } catch (CandidatoJaExistenteException | PartidoJaExistenteException ex) {
-            throw new LinhaInvalidaException(numeroLinha);
+            em.registrarCandidato(partido, numeroCandidato,
+                    nomeUrna, numeroFederacao, dataNascimento, genero, situacao,
+                    codigoMunicipio, cargo);
+        } catch (CandidatoJaExistenteException | PartidoNaoExistenteException ex) {
+            throw new LinhaInvalidaException(numeroLinha, ex);
         }
     }
 

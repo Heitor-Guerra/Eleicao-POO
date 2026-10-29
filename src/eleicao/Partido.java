@@ -26,7 +26,7 @@ public class Partido implements Comparable<Partido> {
         return sigla;
     }
 
-    public Candidato registrarCandidato(int numero, String nomeUrna, int numeroFederacao,
+    Candidato registrarCandidato(int numero, String nomeUrna, int numeroFederacao,
                                         LocalDate dataNascimento, Genero genero, SituacaoTurno situacaoTurno,
                                         int codigoMunicipio, Cargo cargo) {
         Candidato candidato = new Candidato(numero, nomeUrna, this, numeroFederacao, dataNascimento,

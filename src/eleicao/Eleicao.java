@@ -59,6 +59,12 @@ public enum Eleicao {
                                         SituacaoTurno situacaoTurno, int codigoMunicipio,
                                         Cargo cargo) throws CandidatoJaExistenteException,
             PartidoNaoExistenteException {
+        if (partido == null) {
+            throw new IllegalArgumentException("O partido do candidato deve ser informado.");
+        }
+        if (partidos.get(partido.getNumero()) != partido) {
+            throw new PartidoNaoExistenteException(partido.getNumero());
+        }
         if (candidatos.containsKey(numeroCandidato)) {
             throw new CandidatoJaExistenteException(nomeUrna, numeroCandidato);
         }

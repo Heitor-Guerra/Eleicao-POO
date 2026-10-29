@@ -74,7 +74,7 @@ public class Candidato implements Comparable<Candidato> {
     }
 
     public boolean isEleito() {
-        return situacaoTurno == SituacaoTurno.ELEITO || situacaoTurno == SituacaoTurno.ELEITO_QP || situacaoTurno == SituacaoTurno.ELEITO_MIDIA;
+        return situacaoTurno.isEleito();
     }
 
     public boolean isValido() {

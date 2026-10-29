@@ -8,7 +8,7 @@ import java.util.List;
 
 public final class LeitorEleicao extends LeitorCSV {
     public LeitorEleicao(String caminhoArquivo) {
-        super(caminhoArquivo);
+        super(caminhoArquivo, "CD_MUNICIPIO", "CD_CARGO", "NR_VOTAVEL", "QT_VOTOS");
     }
 
     @Override

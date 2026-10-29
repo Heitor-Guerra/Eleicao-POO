@@ -144,11 +144,11 @@ public class Relatorio {
                     posicao,
                     partido.getSigla(),
                     partido.getNumero(),
-                    normalizarNome(primeiro),
+                    primeiro.getNomeUrna(),
                     primeiro.getNumero(),
                     primeiro.getVotos(),
                     primeiro.getVotos() <= 1 ? "voto" : "votos",
-                    normalizarNome(ultimo),
+                    ultimo.getNomeUrna(),
                     ultimo.getNumero(),
                     ultimo.getVotos(),
                     ultimo.getVotos() <= 1 ? "voto" : "votos"
@@ -234,7 +234,7 @@ public class Relatorio {
                 LOCALE,
                 "%nTotal de votos válidos:    %,d%n" +
                         "Total de votos nominais:   %,d (%.2f%%)%n" +
-                        "Total de votos de legenda: %,d (%.2f%%)%n",
+                        "Total de votos de legenda: %,d (%.2f%%)%n%n",
                 totalValidos,
                 totalNominais,
                 percentualNominais,
@@ -251,12 +251,13 @@ public class Relatorio {
 
         return String.format(
                 LOCALE,
-                "%d - %s%s (%s, %,d votos)%n",
+                "%d - %s%s (%s, %,d %s)%n",
                 posicao,
                 federacao,
-                normalizarNome(candidato),
+                candidato.getNomeUrna(),
                 candidato.getPartido().getSigla(),
-                candidato.getVotos()
+                candidato.getVotos(),
+                candidato.getVotos() <= 1 ? "voto" : "votos"
         );
     }
 
@@ -272,10 +273,6 @@ public class Relatorio {
         return posicoes;
     }
 
-    private static String normalizarNome(Candidato candidato) {
-        return candidato.getNomeUrna().trim().replaceAll("\\s+", " ");
-    }
-
     private static String formatarFaixaEtaria(String faixa, long quantidade, long total) {
         double percentual = total == 0 ? 0.0 : quantidade * 100.0 / total;
         return String.format(LOCALE, "%s: %d (%.2f%%)%n", faixa, quantidade, percentual);
@@ -283,6 +280,6 @@ public class Relatorio {
 
     private static String formatarGenero(String genero, long quantidade, long total) {
         double percentual = total == 0 ? 0.0 : quantidade * 100.0 / total;
-        return String.format(LOCALE, "%s: %d (%.2f%%)%n", genero, quantidade, percentual);
+        return String.format(LOCALE, "%-11s%d (%.2f%%)%n", genero + ":", quantidade, percentual);
     }
 }
