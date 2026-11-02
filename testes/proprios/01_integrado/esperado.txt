@@ -1,0 +1,42 @@
+Número de vagas: 2
+
+Vereadores eleitos:
+1 - *ANA (PA, 100 votos)
+2 - CARLA (PB, 80 votos)
+
+Candidatos mais votados (em ordem decrescente de votação e respeitando número de vagas):
+1 - *ANA (PA, 100 votos)
+2 - DAVI (PB, 90 votos)
+
+Teriam sido eleitos se a votação fosse majoritária, e não foram eleitos:
+(com sua posição no ranking de mais votados)
+2 - DAVI (PB, 90 votos)
+
+Eleitos, que se beneficiaram do sistema proporcional:
+(com sua posição no ranking de mais votados)
+4 - CARLA (PB, 80 votos)
+
+Votação dos partidos e número de candidatos eleitos:
+1 - PA - 10, 200 votos (190 nominais e 10 de legenda), 1 candidato eleito
+2 - PB - 20, 200 votos (170 nominais e 30 de legenda), 1 candidato eleito
+3 - PC - 30, 0 voto (0 nominal e 0 de legenda), 0 candidato eleito
+
+Primeiro e último colocados de cada partido:
+1 - PA - 10, ANA (10001, 100 votos) / BRUNO (10002, 90 votos)
+2 - PB - 20, DAVI (20002, 90 votos) / CARLA (20001, 80 votos)
+
+Eleitos, por faixa etária (na data da eleição):
+      Idade < 30: 0 (0,00%)
+30 <= Idade < 40: 0 (0,00%)
+40 <= Idade < 50: 1 (50,00%)
+50 <= Idade < 60: 1 (50,00%)
+60 <= Idade     : 0 (0,00%)
+
+Eleitos, por gênero:
+Feminino:  2 (100,00%)
+Masculino: 0 (0,00%)
+
+Total de votos válidos:    400
+Total de votos nominais:   360 (90,00%)
+Total de votos de legenda: 40 (10,00%)
+

@@ -1,0 +1,431 @@
+[
+  {
+    "id": "01_integrado",
+    "objetivo": "Conferir os dez relatórios, federação, desempate por idade e por número partidário, e eleitos beneficiados/prejudicados.",
+    "contem": [],
+    "nao_contem": [],
+    "erro": null,
+    "argumentos": null,
+    "saida_exata": "esperado.txt"
+  },
+  {
+    "id": "02_filtros",
+    "objetivo": "Ignorar outro município, outro cargo, candidatura inválida e votos sem candidato válido.",
+    "contem": [
+      "Número de vagas: 1",
+      "Total de votos válidos:    1\n"
+    ],
+    "nao_contem": [
+      "INVALIDA",
+      "OUTRO MUNICIPIO",
+      "OUTRO CARGO"
+    ],
+    "erro": null,
+    "argumentos": null
+  },
+  {
+    "id": "03_texto_csv",
+    "objetivo": "Preservar Latin-1, espaços, ponto e vírgula e aspas escapadas dentro de um nome.",
+    "contem": [
+      "1 -  ÁNA  \"BIA\"; SOUZA  (PA, 1 voto)"
+    ],
+    "nao_contem": [
+      "1 votos"
+    ],
+    "erro": null,
+    "argumentos": null
+  },
+  {
+    "id": "04_limites_idade",
+    "objetivo": "Testar aniversário no dia e no dia seguinte e limites 30, 40, 50 e 60 anos.",
+    "contem": [
+      "Idade < 30: 1 (12,50%)",
+      "30 <= Idade < 40: 2 (25,00%)",
+      "40 <= Idade < 50: 2 (25,00%)",
+      "50 <= Idade < 60: 2 (25,00%)",
+      "60 <= Idade     : 1 (12,50%)",
+      "Feminino:  4 (50,00%)",
+      "Masculino: 4 (50,00%)"
+    ],
+    "nao_contem": [],
+    "erro": null,
+    "argumentos": null
+  },
+  {
+    "id": "05_sem_votos",
+    "objetivo": "Zero votos e nenhum eleito não podem causar divisão por zero.",
+    "contem": [
+      "Número de vagas: 0",
+      "Total de votos válidos:    0",
+      "Total de votos nominais:   0 (0,00%)"
+    ],
+    "nao_contem": [
+      "NaN",
+      "Infinity"
+    ],
+    "erro": null,
+    "argumentos": null
+  },
+  {
+    "id": "06_somente_legenda",
+    "objetivo": "Contabilizar legenda de partido cadastrado por candidatura inválida, sem listar extremos sem votos.",
+    "contem": [
+      "1 - PA - 10, 7 votos (0 nominal e 7 de legenda), 0 candidato eleito",
+      "Total de votos de legenda: 7 (100,00%)",
+      "Primeiro e último colocados de cada partido:\n\nEleitos,"
+    ],
+    "nao_contem": [
+      "INVALIDA"
+    ],
+    "erro": null,
+    "argumentos": null
+  },
+  {
+    "id": "07_empate_extremos",
+    "objetivo": "Desempatar partidos pelo número quando seus candidatos mais votados empatam.",
+    "contem": [
+      "Primeiro e último colocados de cada partido:\n1 - PA - 10, ANA (10001, 1 voto) / ANA (10001, 1 voto)\n2 - PB - 20, BIA (20001, 1 voto) / BIA (20001, 1 voto)"
+    ],
+    "nao_contem": [],
+    "erro": null,
+    "argumentos": null
+  },
+  {
+    "id": "08_situacao_um",
+    "objetivo": "O código 1 não deve criar uma vaga de vereador.",
+    "contem": [
+      "Número de vagas: 0"
+    ],
+    "nao_contem": [
+      "SITUACAO UM"
+    ],
+    "erro": null,
+    "argumentos": null
+  },
+  {
+    "id": "09_vazio",
+    "objetivo": "Arquivo de candidatos vazio deve gerar exceção específica.",
+    "contem": [],
+    "nao_contem": [],
+    "erro": [
+      "ArquivoVazioException"
+    ],
+    "argumentos": null
+  },
+  {
+    "id": "10_coluna_ausente",
+    "objetivo": "Validar cabeçalho incompleto mesmo sem linhas de dados.",
+    "contem": [],
+    "nao_contem": [],
+    "erro": [
+      "ColunaAusenteException",
+      "CD_GENERO"
+    ],
+    "argumentos": null
+  },
+  {
+    "id": "11_cabecalho_repetido",
+    "objetivo": "Rejeitar nomes de coluna repetidos.",
+    "contem": [],
+    "nao_contem": [],
+    "erro": [
+      "CabecalhoRepetidoException",
+      "SG_UE"
+    ],
+    "argumentos": null
+  },
+  {
+    "id": "12_aspas_abertas",
+    "objetivo": "Detectar campo com aspas não fechadas e informar a linha.",
+    "contem": [],
+    "nao_contem": [],
+    "erro": [
+      "AspasNaoFechadasException",
+      "Linha 2"
+    ],
+    "argumentos": null
+  },
+  {
+    "id": "13_numero_campos",
+    "objetivo": "Rejeitar linha com quantidade de campos diferente do cabeçalho.",
+    "contem": [],
+    "nao_contem": [],
+    "erro": [
+      "LinhaTamanhoInvalidoException",
+      "Linha 2"
+    ],
+    "argumentos": null
+  },
+  {
+    "id": "14_numero_invalido",
+    "objetivo": "Informar coluna e linha de inteiro inválido.",
+    "contem": [],
+    "nao_contem": [],
+    "erro": [
+      "ErroParsingException",
+      "NR_CANDIDATO",
+      "Linha 2"
+    ],
+    "argumentos": null
+  },
+  {
+    "id": "15_data_invalida",
+    "objetivo": "Informar coluna e linha de data impossível.",
+    "contem": [],
+    "nao_contem": [],
+    "erro": [
+      "ErroParsingException",
+      "DT_NASCIMENTO",
+      "Linha 2"
+    ],
+    "argumentos": null
+  },
+  {
+    "id": "16_duplicado",
+    "objetivo": "Rejeitar candidato duplicado com linha e causa original.",
+    "contem": [],
+    "nao_contem": [],
+    "erro": [
+      "LinhaInvalidaException",
+      "Linha 3",
+      "CandidatoJaExistenteException"
+    ],
+    "argumentos": null
+  },
+  {
+    "id": "17_votos_negativos",
+    "objetivo": "Rejeitar quantidade negativa no CSV de votação.",
+    "contem": [],
+    "nao_contem": [],
+    "erro": [
+      "LinhaInvalidaException",
+      "Linha 2"
+    ],
+    "argumentos": null
+  },
+  {
+    "id": "18_coluna_votacao",
+    "objetivo": "Validar colunas obrigatórias do arquivo de votos.",
+    "contem": [],
+    "nao_contem": [],
+    "erro": [
+      "ColunaAusenteException",
+      "QT_VOTOS"
+    ],
+    "argumentos": null
+  },
+  {
+    "id": "19_arquivo_inexistente",
+    "objetivo": "Informar erro de abertura preservando a causa.",
+    "contem": [],
+    "nao_contem": [],
+    "erro": [
+      "ErroLeituraArquivoException"
+    ],
+    "argumentos": [
+      "1",
+      "{caso}/nao-existe.csv",
+      "{caso}/votacao.csv",
+      "06/10/2024"
+    ]
+  },
+  {
+    "id": "20_argumentos",
+    "objetivo": "Rejeitar linha de comando sem os quatro argumentos.",
+    "contem": [],
+    "nao_contem": [],
+    "erro": [
+      "IllegalArgumentException",
+      "quatro argumentos"
+    ],
+    "argumentos": []
+  },
+  {
+    "id": "21_municipio_invalido",
+    "objetivo": "Rejeitar município não positivo.",
+    "contem": [],
+    "nao_contem": [],
+    "erro": [
+      "IllegalArgumentException",
+      "positivo"
+    ],
+    "argumentos": [
+      "0",
+      "{caso}/candidatos.csv",
+      "{caso}/votacao.csv",
+      "06/10/2024"
+    ]
+  },
+  {
+    "id": "22_colunas_reordenadas",
+    "objetivo": "Localizar colunas pelo nome, aceitando ordem diferente e colunas extras.",
+    "contem": [
+      "Número de vagas: 1",
+      "1 - ANA (PA, 1 voto)"
+    ],
+    "nao_contem": [],
+    "erro": null,
+    "argumentos": null
+  },
+  {
+    "id": "23_linhas_vazias",
+    "objetivo": "Ignorar linhas vazias entre registros.",
+    "contem": [
+      "Número de vagas: 1"
+    ],
+    "nao_contem": [],
+    "erro": null,
+    "argumentos": null
+  },
+  {
+    "id": "24_data_parametro",
+    "objetivo": "Usar a data recebida por argumento: um dia antes do aniversário os limites etários mudam.",
+    "contem": [
+      "Idade < 30: 2 (25,00%)",
+      "30 <= Idade < 40: 2 (25,00%)",
+      "40 <= Idade < 50: 2 (25,00%)",
+      "50 <= Idade < 60: 2 (25,00%)",
+      "60 <= Idade     : 0 (0,00%)"
+    ],
+    "nao_contem": [],
+    "erro": null,
+    "argumentos": [
+      "1",
+      "{caso}/candidatos.csv",
+      "{caso}/votacao.csv",
+      "05/10/2024"
+    ]
+  },
+  {
+    "id": "25_data_parametro_31_02_2024",
+    "objetivo": "Validar 31/02/2024 como data de parametro.",
+    "contem": [],
+    "nao_contem": [],
+    "erro": [
+      "DataEleicaoInvalidaException",
+      "Data da eleição inválida: \"31/02/2024\". Informe uma data existente no formato dd/MM/aaaa.",
+      "Caused by: java.time.format.DateTimeParseException"
+    ],
+    "argumentos": [
+      "1",
+      "{caso}/candidatos.csv",
+      "{caso}/votacao.csv",
+      "31/02/2024"
+    ]
+  },
+  {
+    "id": "25_data_nascimento_31_02_2024",
+    "objetivo": "Validar 31/02/2024 como data de nascimento.",
+    "contem": [],
+    "nao_contem": [],
+    "erro": [
+      "ErroParsingException",
+      "DT_NASCIMENTO",
+      "Linha 2"
+    ],
+    "argumentos": [
+      "1",
+      "{caso}/candidatos.csv",
+      "{caso}/votacao.csv",
+      "06/10/2024"
+    ]
+  },
+  {
+    "id": "26_data_parametro_31_04_2024",
+    "objetivo": "Validar 31/04/2024 como data de parametro.",
+    "contem": [],
+    "nao_contem": [],
+    "erro": [
+      "DataEleicaoInvalidaException",
+      "Data da eleição inválida: \"31/04/2024\". Informe uma data existente no formato dd/MM/aaaa.",
+      "Caused by: java.time.format.DateTimeParseException"
+    ],
+    "argumentos": [
+      "1",
+      "{caso}/candidatos.csv",
+      "{caso}/votacao.csv",
+      "31/04/2024"
+    ]
+  },
+  {
+    "id": "26_data_nascimento_31_04_2024",
+    "objetivo": "Validar 31/04/2024 como data de nascimento.",
+    "contem": [],
+    "nao_contem": [],
+    "erro": [
+      "ErroParsingException",
+      "DT_NASCIMENTO",
+      "Linha 2"
+    ],
+    "argumentos": [
+      "1",
+      "{caso}/candidatos.csv",
+      "{caso}/votacao.csv",
+      "06/10/2024"
+    ]
+  },
+  {
+    "id": "27_data_parametro_29_02_2023",
+    "objetivo": "Validar 29/02/2023 como data de parametro.",
+    "contem": [],
+    "nao_contem": [],
+    "erro": [
+      "DataEleicaoInvalidaException",
+      "Data da eleição inválida: \"29/02/2023\". Informe uma data existente no formato dd/MM/aaaa.",
+      "Caused by: java.time.format.DateTimeParseException"
+    ],
+    "argumentos": [
+      "1",
+      "{caso}/candidatos.csv",
+      "{caso}/votacao.csv",
+      "29/02/2023"
+    ]
+  },
+  {
+    "id": "27_data_nascimento_29_02_2023",
+    "objetivo": "Validar 29/02/2023 como data de nascimento.",
+    "contem": [],
+    "nao_contem": [],
+    "erro": [
+      "ErroParsingException",
+      "DT_NASCIMENTO",
+      "Linha 2"
+    ],
+    "argumentos": [
+      "1",
+      "{caso}/candidatos.csv",
+      "{caso}/votacao.csv",
+      "06/10/2024"
+    ]
+  },
+  {
+    "id": "28_data_parametro_29_02_2024",
+    "objetivo": "Validar 29/02/2024 como data de parametro.",
+    "contem": [
+      "Número de vagas: 1"
+    ],
+    "nao_contem": [],
+    "erro": null,
+    "argumentos": [
+      "1",
+      "{caso}/candidatos.csv",
+      "{caso}/votacao.csv",
+      "29/02/2024"
+    ]
+  },
+  {
+    "id": "28_data_nascimento_29_02_2024",
+    "objetivo": "Validar 29/02/2024 como data de nascimento.",
+    "contem": [
+      "Número de vagas: 1"
+    ],
+    "nao_contem": [],
+    "erro": null,
+    "argumentos": [
+      "1",
+      "{caso}/candidatos.csv",
+      "{caso}/votacao.csv",
+      "06/10/2024"
+    ]
+  }
+]

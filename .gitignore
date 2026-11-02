@@ -31,3 +31,7 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+# Resultados gerados pelos testes
+/testes/resultados/
+/vereadores.jar
