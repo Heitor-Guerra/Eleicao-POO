@@ -10,12 +10,15 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.*;
 
 public abstract class LeitorCSV {
     private static final Charset CODIFICACAO_TSE = StandardCharsets.ISO_8859_1;
     private static final Locale LOCALE = Locale.forLanguageTag("pt-BR");
-    private static final DateTimeFormatter FORMATO_DATA = DateTimeFormatter.ofPattern("dd/MM/yyyy", LOCALE);
+    private static final DateTimeFormatter FORMATO_DATA = DateTimeFormatter
+            .ofPattern("dd/MM/uuuu", LOCALE)
+            .withResolverStyle(ResolverStyle.STRICT);
     private static final char SEPARADOR = ';';
 
     private final String caminhoArquivo;

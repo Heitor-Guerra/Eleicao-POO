@@ -1,5 +1,6 @@
 import eleicao.Candidato;
 import eleicao.Eleicao;
+import eleicao.exceptions.DataEleicaoInvalidaException;
 import leitura.LeitorCandidatos;
 import leitura.LeitorEleicao;
 import relatorios.Relatorio;
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -15,7 +17,8 @@ import java.util.Locale;
 /** Ponto de entrada para testar a leitura dos CSVs de candidatos e votação. */
 public final class Main {
     private static final DateTimeFormatter FORMATO_DATA = DateTimeFormatter
-            .ofPattern("dd/MM/yyyy", Locale.forLanguageTag("pt-BR"));
+            .ofPattern("dd/MM/uuuu", Locale.forLanguageTag("pt-BR"))
+            .withResolverStyle(ResolverStyle.STRICT);
 
     private Main() { }
 
@@ -36,7 +39,12 @@ public final class Main {
                     "O primeiro argumento deve ser um código de município positivo.", ex);
         }
 
-        LocalDate dataEleicao = LocalDate.parse(args[3], FORMATO_DATA);
+        final LocalDate dataEleicao;
+        try {
+            dataEleicao = LocalDate.parse(args[3], FORMATO_DATA);
+        } catch (DateTimeParseException ex) {
+            throw new DataEleicaoInvalidaException(args[3], ex);
+        }
         Eleicao.INSTANCIA.inicializar(codigoMunicipio, dataEleicao);
 
         LeitorCandidatos l1 = new LeitorCandidatos(args[1]);
